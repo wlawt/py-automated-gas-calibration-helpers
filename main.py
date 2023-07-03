@@ -50,13 +50,18 @@ def create_augmented_matrix(coefficient_matrix, constant_matrix):
     return coefficient_matrix.row_join(constant_matrix)
 
 
+"""
+@param A: coefficient matrix
+@param b: constant matrix
+@returns: Matrix
+"""
 def solve_linear_equations(A, b):
     # find A transposed
-    A_T = np.transpose(A)
+    A_T = A.transpose()
 
     # find matrix A^T * A and vector A^T * b
-    A_TA = np.matmul(A_T, A)
-    A_Tb = np.matmul(A_T, b)
+    A_TA = A_T * A
+    A_Tb = A_T * b
     augmented_matrix = create_augmented_matrix(A_TA, A_Tb)
     answer = augmented_matrix.rref()
     print(answer)
@@ -82,6 +87,7 @@ print("\n")
 print("===== Augmented Matrix =====")
 aug_matrix = create_augmented_matrix(coeff_matrix, const_matrix)
 print(aug_matrix)
+print("\n")
 
-#print("===== Solving Linear Equations =====")
-#solve_linear_equations(coeff_matrix, const_matrix)
+print("===== Solving Linear Equations =====")
+solve_linear_equations(coeff_matrix, const_matrix)
