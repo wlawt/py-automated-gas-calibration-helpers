@@ -64,43 +64,60 @@ def compute_least_square_solution(A, b):
     A_TA = A_T * A
     A_Tb = A_T * b
     augmented_matrix = create_augmented_matrix(A_TA, A_Tb)
-    answer = augmented_matrix.rref()
-    print(answer)
-    
+    return augmented_matrix.rref()[0]
+
+
+"""
+@notice: find all free variables
+@param M: rref'd matrix
+@returns: list of all free variables
+"""
+def find_free_variables(A,b):
+    A_T = A.transpose()
+    A_TA = A_T * A
+    A_Tb = A_T * b
+    augmented_matrix = create_augmented_matrix(A_TA, A_Tb)
+    return augmented_matrix.rref()[1]    
+
 
 """
 @notice: this can handle when there are infinitely many least square solutions
 @param A: coefficient matrix
 @param b: constant matrix
-@returns: Matrix
+@returns: Matrix or tuple
 """
 def compute_least_square_solutions(A, b):
     A_T = A.transpose()
     A_TA = A_T * A
     
-    assert is_solvable(A)
+    if not is_solvable(A):
+        print("[WARNING] system of equations is inconsistent\nwhere:")
+        list_of_free_variables = find_free_variables(A,b)
+        for free_variable in list_of_free_variables:
+            print("- position {} gas parameter cannot be determined".format(free_variable))
+        return "notice: try adding more samples"
 
     inverse = A_TA.inv()
     A_Tb = A_T * b
     x_hat = inverse * A_Tb
-    print(x_hat)
+    return x_hat
 
 
 """
-@notice: determines if a matrix is solvable
+@notice: determines if a matrix is consistent
 @reference: https://math.stackexchange.com/questions/104824/how-to-determine-if-a-linear-system-is-solvable 
 @param M: Matrix
 @returns: bool
 """
 def is_solvable(M):
-    # Must be a square matrix otherwise we'll have a free variable
-    # TODO: find free variables
-    assert M.is_square
+    # "A system doesn't have a unique solution" can happen in two ways: 
+    # (1) it can have more than one solution
+    # (2) or it can have no solutions. 
 
-    # det must != 0, otherwise there are many solutions
-    # we must be able to do Gaussian Row Reduction, otherwise it
+    # (1) det must != 0, otherwise there are many solutions
+    # (2) we must be able to do Gaussian Row Reduction, otherwise it
     # has no solutions
-    assert is_invertible_with_lu(M)
+    if not is_invertible_with_lu(M): return False
 
     # if all things pass, the system of linear equations is solvable
     return True
@@ -154,6 +171,10 @@ aug_matrix = create_augmented_matrix(coeff_matrix, const_matrix)
 print(aug_matrix)
 print("\n")
 
-print("===== Solving Linear Equations =====")
-compute_least_square_solution(coeff_matrix, const_matrix)
-compute_least_square_solutions(coeff_matrix, const_matrix)
+print("===== Least Square Solution (rref) =====")
+print(compute_least_square_solution(coeff_matrix, const_matrix))
+print("\n")
+
+print("===== Least Square Solution (xhat) =====")
+print(compute_least_square_solutions(coeff_matrix, const_matrix))
+print("\n")
