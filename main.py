@@ -51,11 +51,12 @@ def create_augmented_matrix(coefficient_matrix, constant_matrix):
 
 
 """
+@notice: find a particular least square solution
 @param A: coefficient matrix
 @param b: constant matrix
 @returns: Matrix
 """
-def solve_linear_equations(A, b):
+def compute_least_square_solution(A, b):
     # find A transposed
     A_T = A.transpose()
 
@@ -66,21 +67,32 @@ def solve_linear_equations(A, b):
     answer = augmented_matrix.rref()
     print(answer)
     
-
+"""
+@notice: this can handle when there are infinitely many least square solutions
+"""
+def compute_least_square_solutions(A, b):
+    A_T = A.transpose()
+    A_TA = A_T * A
+    inverse = A_TA.inv()
+    A_Tb = A_T * b
+    x_hat = inverse * A_Tb
+    print(x_hat)
 
 
 """
 TESTS
 """
 print("===== Coefficient Matrix =====")
-coeff_matrix = add_gas_formula_to_coefficient_matrix([1,2], coeff_matrix)
-coeff_matrix = add_gas_formula_to_coefficient_matrix([4,5], coeff_matrix)
+coeff_matrix = add_gas_formula_to_coefficient_matrix([0,1], coeff_matrix)
+coeff_matrix = add_gas_formula_to_coefficient_matrix([1,1], coeff_matrix)
+coeff_matrix = add_gas_formula_to_coefficient_matrix([2,1], coeff_matrix)
 print(coeff_matrix)
 print("\n")
 
 print("===== Constant Matrix =====")
-const_matrix = add_running_time_to_constant_matrix([3], const_matrix)
 const_matrix = add_running_time_to_constant_matrix([6], const_matrix)
+const_matrix = add_running_time_to_constant_matrix([0], const_matrix)
+const_matrix = add_running_time_to_constant_matrix([0], const_matrix)
 print(const_matrix)
 print("\n")
 
@@ -90,4 +102,5 @@ print(aug_matrix)
 print("\n")
 
 print("===== Solving Linear Equations =====")
-solve_linear_equations(coeff_matrix, const_matrix)
+compute_least_square_solution(coeff_matrix, const_matrix)
+compute_least_square_solutions(coeff_matrix, const_matrix)
