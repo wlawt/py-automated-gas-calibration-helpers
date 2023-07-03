@@ -1,4 +1,5 @@
 import numpy as np
+from sympy import *
 
 """
 1a + 2b = 3
@@ -19,9 +20,10 @@ constant matrix:
 [3, 6]
 """
 
-coeff_matrix = np.matrix([], dtype=float)
-const_matrix = np.matrix([], dtype=float)
-
+#coeff_matrix = np.matrix([], dtype=float)
+#const_matrix = np.matrix([], dtype=float)
+coeff_matrix = Matrix([])
+const_matrix = Matrix([])
 
 """
 @param formula: vec<u64>
@@ -29,10 +31,11 @@ const_matrix = np.matrix([], dtype=float)
 @returns: vec<vec<u64>> 
 """
 def add_gas_formula_to_coefficient_matrix(formula, coefficient_matrix):
-    formula = np.asmatrix(formula)
-    if coefficient_matrix.size == 0:
-        return np.hstack((coefficient_matrix, formula))
-    return np.asmatrix(np.vstack((coefficient_matrix, formula)))
+    #formula = np.asmatrix(formula)
+    #if coefficient_matrix.size == 0:
+    #    return np.hstack((coefficient_matrix, formula))
+    #return np.asmatrix(np.vstack((coefficient_matrix, formula)))
+    return coefficient_matrix.row_insert(0, Matrix([formula]))
 
 
 """
@@ -41,10 +44,11 @@ def add_gas_formula_to_coefficient_matrix(formula, coefficient_matrix):
 @returns: vec<u64>
 """
 def add_running_time_to_constant_matrix(running_time, constant_matrix):
-    running_time = np.asmatrix(running_time)
-    if constant_matrix.size == 0:
-        return np.hstack((constant_matrix, running_time))
-    return np.asmatrix(np.vstack((constant_matrix, running_time)))
+    #running_time = np.asmatrix(running_time)
+    #if constant_matrix.size == 0:
+    #    return np.hstack((constant_matrix, running_time))
+    #return np.asmatrix(np.vstack((constant_matrix, running_time)))
+    return constant_matrix.row_insert(0, Matrix(running_time))
 
 
 """
@@ -53,7 +57,22 @@ def add_running_time_to_constant_matrix(running_time, constant_matrix):
 @returns: vec<vec<u64>>
 """
 def create_augmented_matrix(coefficient_matrix, constant_matrix):
-    return np.hstack((coefficient_matrix, constant_matrix))
+    #return np.hstack((coefficient_matrix, constant_matrix))
+    return coefficient_matrix.row_join(constant_matrix)
+
+
+def solve_linear_equations(A, b):
+    # find A transposed
+    A_T = np.transpose(A)
+
+    # find matrix A^T * A and vector A^T * b
+    A_TA = np.matmul(A_T, A)
+    A_Tb = np.matmul(A_T, b)
+    augmented_matrix = create_augmented_matrix(A_TA, A_Tb)
+    answer = augmented_matrix.rref()
+    print(answer)
+    
+
 
 
 """
@@ -74,3 +93,6 @@ print("\n")
 print("===== Augmented Matrix =====")
 aug_matrix = create_augmented_matrix(coeff_matrix, const_matrix)
 print(aug_matrix)
+
+#print("===== Solving Linear Equations =====")
+#solve_linear_equations(coeff_matrix, const_matrix)
