@@ -16,7 +16,7 @@ def add_gas_formula_to_coefficient_matrix(formula, coefficient_matrix):
 """
 @param running_time: vec<u64>
 @param constant_matrix: vec<u64>
-@returns: vec<u64>
+@returns: vec<vec<u64>>
 """
 def add_running_time_to_constant_matrix(running_time, constant_matrix):
     return constant_matrix.row_insert(0, Matrix(running_time))
@@ -24,7 +24,7 @@ def add_running_time_to_constant_matrix(running_time, constant_matrix):
 
 """
 @param coefficient_matrix: vec<vec<u64>>
-@param constant_matrix: vec<u64>
+@param constant_matrix: vec<vec<u64>>
 @returns: vec<vec<u64>>
 """
 def create_augmented_matrix(coefficient_matrix, constant_matrix):
