@@ -1,25 +1,6 @@
 #import numpy as np
 from sympy import *
 
-"""
-1a + 2b = 3
-4a + 5b = 6
-
-vec<u64> u64 -> (vec<vec<u64>>, vec<u64>)
-LHS RHS -> (coefficient matrix, constant matrix)
-[1,2] 3
-[4,5] 6
-
-coefficient matrix:
-[
-    [1,2]
-    [4,5]
-]
-
-constant matrix:
-[3, 6]
-"""
-
 coeff_matrix = Matrix([])
 const_matrix = Matrix([])
 
