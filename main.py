@@ -67,12 +67,19 @@ def compute_least_square_solution(A, b):
     answer = augmented_matrix.rref()
     print(answer)
     
+
 """
 @notice: this can handle when there are infinitely many least square solutions
+@param A: coefficient matrix
+@param b: constant matrix
+@returns: Matrix
 """
 def compute_least_square_solutions(A, b):
     A_T = A.transpose()
     A_TA = A_T * A
+    
+    assert is_solvable(A)
+
     inverse = A_TA.inv()
     A_Tb = A_T * b
     x_hat = inverse * A_Tb
@@ -80,19 +87,65 @@ def compute_least_square_solutions(A, b):
 
 
 """
+@notice: determines if a matrix is solvable
+@reference: https://math.stackexchange.com/questions/104824/how-to-determine-if-a-linear-system-is-solvable 
+@param M: Matrix
+@returns: bool
+"""
+def is_solvable(M):
+    # Must be a square matrix otherwise we'll have a free variable
+    # TODO: find free variables
+    assert M.is_square
+
+    # det must != 0, otherwise there are many solutions
+    # we must be able to do Gaussian Row Reduction, otherwise it
+    # has no solutions
+    assert is_invertible_with_lu(M)
+
+    # if all things pass, the system of linear equations is solvable
+    return True
+
+
+"""
+@notice: computes determinant using LU decomposition
+@param M: Matrix
+@returns: bool
+"""
+def is_invertible_with_lu(M):
+    return M.det(method="lu") != 0
+
+
+
+
+"""
 TESTS
 """
 print("===== Coefficient Matrix =====")
-coeff_matrix = add_gas_formula_to_coefficient_matrix([0,1], coeff_matrix)
-coeff_matrix = add_gas_formula_to_coefficient_matrix([1,1], coeff_matrix)
-coeff_matrix = add_gas_formula_to_coefficient_matrix([2,1], coeff_matrix)
+#coeff_matrix = add_gas_formula_to_coefficient_matrix([0,1], coeff_matrix)
+#coeff_matrix = add_gas_formula_to_coefficient_matrix([1,1], coeff_matrix)
+#coeff_matrix = add_gas_formula_to_coefficient_matrix([2,1], coeff_matrix)
+
+#coeff_matrix = add_gas_formula_to_coefficient_matrix([1,1,0], coeff_matrix)
+#coeff_matrix = add_gas_formula_to_coefficient_matrix([1,1,1], coeff_matrix)
+
+coeff_matrix = add_gas_formula_to_coefficient_matrix([3,-1,2], coeff_matrix)
+coeff_matrix = add_gas_formula_to_coefficient_matrix([2,1,1], coeff_matrix)
+coeff_matrix = add_gas_formula_to_coefficient_matrix([1,3,0], coeff_matrix)
+
 print(coeff_matrix)
 print("\n")
 
 print("===== Constant Matrix =====")
-const_matrix = add_running_time_to_constant_matrix([6], const_matrix)
-const_matrix = add_running_time_to_constant_matrix([0], const_matrix)
-const_matrix = add_running_time_to_constant_matrix([0], const_matrix)
+#const_matrix = add_running_time_to_constant_matrix([6], const_matrix)
+#const_matrix = add_running_time_to_constant_matrix([0], const_matrix)
+#const_matrix = add_running_time_to_constant_matrix([0], const_matrix)
+
+#const_matrix = add_running_time_to_constant_matrix([3], const_matrix)
+#const_matrix = add_running_time_to_constant_matrix([5], const_matrix)
+
+const_matrix = add_running_time_to_constant_matrix([2], const_matrix)
+const_matrix = add_running_time_to_constant_matrix([-1], const_matrix)
+const_matrix = add_running_time_to_constant_matrix([-1], const_matrix)
 print(const_matrix)
 print("\n")
 
