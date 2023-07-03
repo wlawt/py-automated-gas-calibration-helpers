@@ -21,13 +21,11 @@ x	+	y	+	3z	=	12
 The Coefficient Matrix would be represented as:
 
 [
-    
     [1,  1,  3]
 
     [1, -1, -1]
-
-    [2,  1, -2]
     
+    [2,  1, -2]
 ]
 
 The Constant Vector would be represented as (a Matrix):
