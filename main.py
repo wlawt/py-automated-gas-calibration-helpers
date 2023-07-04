@@ -151,10 +151,10 @@ def find_outliers(rref_matrix, coefficient_matrix, constant_matrix):
     
     # compare w/ margin of error
     outliers = []
-    const_row_len = shape(const_matrix)[ROW]
+    const_row_len = shape(constant_matrix)[ROW]
     for i in range(const_row_len):
         # constant vector should always have 1 value
-        a_ij = const_matrix.row(i)[0]
+        a_ij = constant_matrix.row(i)[0]
 
         # div by zero handling
         numerator = abs(a_ij-computed_running_time[i])
