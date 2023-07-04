@@ -12,8 +12,8 @@ const_matrix = Matrix([])
 
 """
 @param formula: vec<u64>
-@param coefficient_matrix: vec<vec<u64>>
-@returns: vec<vec<u64>> 
+@param coefficient_matrix: Matrix 2d
+@returns: Matrix 2d 
 """
 def add_gas_formula_to_coefficient_matrix(formula, coefficient_matrix):
     return coefficient_matrix.row_insert(0, Matrix([formula]))
@@ -21,17 +21,17 @@ def add_gas_formula_to_coefficient_matrix(formula, coefficient_matrix):
 
 """
 @param running_time: vec<u64>
-@param constant_matrix: vec<u64>
-@returns: vec<vec<u64>>
+@param constant_matrix: Matrix 2d
+@returns: Matrix 2d
 """
 def add_running_time_to_constant_matrix(running_time, constant_matrix):
     return constant_matrix.row_insert(0, Matrix(running_time))
 
 
 """
-@param coefficient_matrix: vec<vec<u64>>
-@param constant_matrix: vec<vec<u64>>
-@returns: vec<vec<u64>>
+@param coefficient_matrix: Matrix 2d
+@param constant_matrix: Matrix 2d
+@returns: Matrix 2d
 """
 def create_augmented_matrix(coefficient_matrix, constant_matrix):
     return coefficient_matrix.row_join(constant_matrix)
