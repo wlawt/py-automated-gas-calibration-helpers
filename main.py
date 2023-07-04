@@ -1,4 +1,3 @@
-#import numpy as np
 from sympy import *
 
 """
@@ -7,7 +6,6 @@ CONSTANTS
 ROW = 0
 COL = 1
 MARGIN_OF_ERROR = 0.05
-
 
 coeff_matrix = Matrix([])
 const_matrix = Matrix([])
