@@ -71,6 +71,22 @@ fn create_augmented_matrix(
     }
 }
 
+/*
+ * @notice: Compute least squares
+ * @param A: Coefficient matrix
+ * @param b: Constant matrix
+ * @return x_hat: A matrix of the solution
+ */
+#[allow(non_snake_case)]
+fn compute_least_square_solutions(A: &mut DMatrix<f64>, b: &mut DMatrix<f64>) -> DMatrix<f64> {
+    let A_T = A.transpose();
+    let A_TA = A_T.ad_mul(A);
+    let inverse = A_TA.try_inverse().expect("inverse should work");
+    let A_Tb = A_T.ad_mul(b);
+    let x_hat = inverse.ad_mul(&A_Tb);
+    x_hat
+}
+
 fn main() {
     //// Construct coefficient matrix based on input size at runtime
     let mut coeff_row_idx = 0;
@@ -104,4 +120,8 @@ fn main() {
     let mut augmented_matrix = DMatrix::<f64>::zeros(NROWS, NCOLS + 1);
     create_augmented_matrix(&mut augmented_matrix, &mut coeff_matrix, &mut const_matrix);
     println!("augmented matrix: {}", augmented_matrix);
+
+    //// least square solutions example
+    let lss = compute_least_square_solutions(&mut coeff_matrix, &mut const_matrix);
+    println!("least sq: {}", lss);
 }
