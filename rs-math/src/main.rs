@@ -26,6 +26,13 @@ fn add_gas_formula_to_coefficient_matrix(
     *idx = *idx + 1;
 }
 
+/*
+ * @notice: Add the running time corresponding to the gas formula to
+ * constant matrix.
+ * @param idx: Keeps track of which row to edit
+ * @param running_time: The running time w.r.t the gas formula
+ * @param constant_matrix: The Matrix we want to edit
+ */
 fn add_running_time_to_constant_matrix(
     idx: &mut usize,
     running_time: f64,
@@ -35,8 +42,37 @@ fn add_running_time_to_constant_matrix(
     *idx = *idx + 1;
 }
 
+/*
+ * @notice: Join coefficient and constant matrix to make augmented
+ * @param augmented_matrix: Matrix to join coefficient and constant
+ * @param coefficient_matrix: Matrix for gas formula
+ * @param constant_matrix: Matrix for running time w.r.t gas formula
+ */
+fn create_augmented_matrix(
+    augmented_matrix: &mut DMatrix<f64>,
+    coefficient_matrix: &mut DMatrix<f64>,
+    constant_matrix: &mut DMatrix<f64>,
+) {
+    let mut i = 0;
+    let mut j = 0;
+    while i < NROWS {
+        while j < NCOLS {
+            augmented_matrix[(i, j)] = coefficient_matrix[(i, j)];
+            j = j + 1;
+        }
+        i = i + 1;
+        j = 0;
+    }
+
+    i = 0;
+    while i < NROWS {
+        augmented_matrix[(i, NCOLS)] = constant_matrix[(i, 0)];
+        i = i + 1;
+    }
+}
+
 fn main() {
-    //// Construct coefficient matrix based on input size
+    //// Construct coefficient matrix based on input size at runtime
     let mut coeff_row_idx = 0;
     let mut coeff_matrix = DMatrix::<f64>::zeros(NROWS, NCOLS);
 
@@ -48,12 +84,9 @@ fn main() {
     add_gas_formula_to_coefficient_matrix(&mut coeff_row_idx, &eq1, &mut coeff_matrix);
     add_gas_formula_to_coefficient_matrix(&mut coeff_row_idx, &eq2, &mut coeff_matrix);
     add_gas_formula_to_coefficient_matrix(&mut coeff_row_idx, &eq3, &mut coeff_matrix);
-    println!(
-        "coefficient matrix after: {} {}",
-        coeff_matrix, coeff_row_idx
-    );
+    println!("coefficient matrix after: {}", coeff_matrix);
 
-    //// Construct constant matrix based on nrows
+    //// Construct constant matrix based on nrows at runtime
     let mut const_row_idx = 0;
     let mut const_matrix = DMatrix::<f64>::zeros(NROWS, VEC_COL);
 
@@ -66,4 +99,9 @@ fn main() {
     add_running_time_to_constant_matrix(&mut const_row_idx, r2, &mut const_matrix);
     add_running_time_to_constant_matrix(&mut const_row_idx, r3, &mut const_matrix);
     println!("constant matrix after: {}", const_matrix);
+
+    //// Construct augmented matrix at runtime
+    let mut augmented_matrix = DMatrix::<f64>::zeros(NROWS, NCOLS + 1);
+    create_augmented_matrix(&mut augmented_matrix, &mut coeff_matrix, &mut const_matrix);
+    println!("augmented matrix: {}", augmented_matrix);
 }
