@@ -125,6 +125,16 @@ fn find_free_variables(A: &mut DMatrix<f64>, b: &mut DMatrix<f64>) -> Vec<usize>
     pivot_columns
 }
 
+/*
+ * @notice: We use the Least Squares solution to input into the LHS to get what we
+ * call as the Computed Time. We compare this against the LHS (the Actual Time) and
+ * check if it it varies by a certain amount
+ * @param x_hat: Solutions to the Least Squares
+ * @param coefficient_matrix: Matrix of linear equations
+ * @param constant_matrix: Matrix of Actual Time
+ * @return outliers: Vector of pairs (i,j) containing the gas parameter, a_ij, in the
+ * matrix that cannot be determined
+ */
 fn find_outliers(
     x_hat: &mut DMatrix<f64>,
     coefficient_matrix: &mut DMatrix<f64>,
