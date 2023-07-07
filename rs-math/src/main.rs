@@ -1,3 +1,4 @@
+use anyhow::Result;
 use nalgebra::{self, DMatrix};
 
 //// TODO: at runtime, find how many linear equations we have
@@ -78,13 +79,21 @@ fn create_augmented_matrix(
  * @return x_hat: A matrix of the solution
  */
 #[allow(non_snake_case)]
-fn compute_least_square_solutions(A: &mut DMatrix<f64>, b: &mut DMatrix<f64>) -> DMatrix<f64> {
+fn compute_least_square_solutions(
+    A: &mut DMatrix<f64>,
+    b: &mut DMatrix<f64>,
+) -> Result<DMatrix<f64>, String> {
     let A_T = A.transpose();
     let A_TA = A_T.ad_mul(A);
+
+    if !A_TA.is_invertible() {
+        return Err("cannot invert A matrix".to_string());
+    }
+
     let inverse = A_TA.try_inverse().expect("inverse should work");
     let A_Tb = A_T.ad_mul(b);
     let x_hat = inverse.ad_mul(&A_Tb);
-    x_hat
+    Ok(x_hat)
 }
 
 fn main() {
@@ -123,5 +132,7 @@ fn main() {
 
     //// least square solutions example
     let lss = compute_least_square_solutions(&mut coeff_matrix, &mut const_matrix);
-    println!("least sq: {}", lss);
+    if lss.is_ok() {
+        println!("least sq: {}", lss.unwrap());
+    }
 }
