@@ -1,13 +1,14 @@
 use anyhow::Result;
 use nalgebra::{self, DMatrix};
 use std::env;
-use std::ops::Mul;
+use std::ops::{Div, Mul};
 
 //// TODO: at runtime, find how many linear equations we have
 const NROWS: usize = 3;
 //// TODO: at runtime, find how many distinct gas parameters we have
 const NCOLS: usize = 2;
 const VEC_COL: usize = 1;
+const MARGIN_OF_ERROR: f64 = 0.05;
 
 /*
  * @notice: Add a gas formula to the coefficient matrix
@@ -122,6 +123,60 @@ fn find_free_variables(A: &mut DMatrix<f64>, b: &mut DMatrix<f64>) -> Vec<usize>
 
     let pivot_columns = find_pivot_columns(&mut aug_matrix);
     pivot_columns
+}
+
+fn find_outliers(
+    x_hat: &mut DMatrix<f64>,
+    coefficient_matrix: &mut DMatrix<f64>,
+    constant_matrix: &mut DMatrix<f64>,
+) -> Result<Vec<(usize, usize)>, String> {
+    let mut i = 0;
+    let mut j = 0;
+
+    //// get computed running time
+    let mut computed_running_time: Vec<f64> = Vec::new();
+    let coeff_row = coefficient_matrix.nrows();
+    let coeff_col = coefficient_matrix.ncols();
+    while i < coeff_row {
+        let mut total_time: f64 = 0.0;
+        while j < coeff_col {
+            let a_ij = coefficient_matrix[(i, j)];
+            total_time = total_time + (a_ij * x_hat[(j, 0)]);
+            j = j + 1;
+        }
+        computed_running_time.push(total_time);
+        i = i + 1;
+        j = 0;
+    }
+
+    i = 0;
+
+    // compare w/ margin of error
+    let mut outliers: Vec<(usize, usize)> = Vec::new();
+    let const_row = constant_matrix.nrows();
+    while i < const_row {
+        let a_ij = constant_matrix[(i, 0)];
+
+        let numerator = (a_ij - computed_running_time[i]).abs();
+        let denominator = computed_running_time[i];
+        if denominator == 0.0 {
+            return Err(String::from("Division by zero"));
+        } else {
+            let diff = numerator.div(denominator);
+            if diff > MARGIN_OF_ERROR {
+                // append all gas parameters indices corresponding
+                // to that equation as a cause to the outlier
+                let mut k = 0;
+                while k < coeff_col {
+                    outliers.push((i, k));
+                    k = k + 1;
+                }
+            }
+        }
+        i = i + 1;
+    }
+
+    Ok(outliers)
 }
 
 /*
@@ -251,7 +306,14 @@ fn main() {
     //// least square solutions example
     let lss = compute_least_square_solutions(&mut coeff_matrix, &mut const_matrix);
     if lss.is_ok() {
-        println!("least square solution: {}", lss.unwrap());
+        let mut x_hat = lss.unwrap();
+        println!("least square solution: {}", x_hat);
+
+        //// find any outliers in the data
+        let outliers = find_outliers(&mut x_hat, &mut coeff_matrix, &mut const_matrix);
+        if outliers.is_ok() {
+            println!("outliers: {:?}", outliers.unwrap());
+        }
     } else {
         let free_variables = find_free_variables(&mut coeff_matrix, &mut const_matrix);
         println!("free variables are: {:?}", free_variables);
